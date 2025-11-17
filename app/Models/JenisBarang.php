@@ -13,7 +13,7 @@ class JenisBarang extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'nama',
+        'name',
         
     ];
     // public function jenis_kendaraan(): BelongsTo

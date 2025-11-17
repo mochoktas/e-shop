@@ -12,7 +12,7 @@ class Barang extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'nama',
+        'name',
         'harga',
         'foto',
         'jenis_barang_id'
