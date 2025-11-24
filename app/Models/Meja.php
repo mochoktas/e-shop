@@ -12,7 +12,7 @@ class Meja extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'nomor_meja',
+        'name',
         'status'
     ];
     public function keranjang(): HasMany

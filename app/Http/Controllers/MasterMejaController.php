@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use App\Models\JenisBarang;
+use App\Models\Meja;
 use yajra\Datatables\Datatables;
 
-class MasterJenisBarangController extends Controller
+class MasterMejaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,13 +15,9 @@ class MasterJenisBarangController extends Controller
     public function index(Request $request)
     {
         //
-        // $jenisBarang = JenisBarang::all();
-        // $jenisBarang2 = json_encode($jenisBarang);
-        // $jenisBarang3 = json_decode($jenisBarang2);
-        // dd($jenisBarang3);
         if ($request->ajax()) {
 
-            $data = JenisBarang::query();
+            $data = Meja::query();
 
             return Datatables::of($data)
                     ->addIndexColumn()
@@ -31,7 +27,7 @@ class MasterJenisBarangController extends Controller
                             $btn = $btn. '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm update-data"><i class="fa-regular fa-pen-to-square"></i> Edit</a>';
       
                             // $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct"><i class="fa-solid fa-trash"></i> Delete</a>';
-                            $deleteRoute = route('jenisBarang.delete', $row->id);
+                            $deleteRoute = route('meja.delete', $row->id);
                             $btn = $btn.'<form action="'.$deleteRoute.'" method="POST" style="display:inline;"> 
                                 <input type="hidden" name="_token" value="'.csrf_token().'">
                                 <input type="hidden" name="_method" value="DELETE">
@@ -48,19 +44,16 @@ class MasterJenisBarangController extends Controller
                             // $btn .= '</form>';
                             return $btn;
                     })
+                    ->editColumn('status', function ($row) {
+                        return $row->status == 1 ? 'Aktif' : 'Tidak Aktif';
+                    })
+
+
                     ->rawColumns(['action'])
                     ->make(true);
         }
-        return view('master.jenis-barang.index');
+        return view('master.meja.index');
     }
-    // public function getJenisBarang()
-    // {
-    //     $jenisBarang = JenisBarang::query();
-    //     // $data = json_encode($jenisBarang);
-    //     // $data2 = json_decode($data);
-    //     // return response()->json($jenisBarang);
-    //     return Datatables::of($jenisBarang)->make(true);
-    // }
 
     /**
      * Show the form for creating a new resource.
@@ -76,50 +69,24 @@ class MasterJenisBarangController extends Controller
     public function store(Request $request)
     {
         //
-        // dd($request);
-        // 1. Validasi Data
         $request->validate([
-            'name' => ['required', 'unique:jenis_barang', 'max:50']
+            'name' => 'required|unique:meja|max:10'
         ]);
-        $jenisBarang = JenisBarang::create($request->all());
-        return redirect()->route('jenisBarang.index')->with('success', 'Data berhasil disimpan!');
+        $meja = Meja::create([
+            'name' => $request->name,
+            'status' => 0,
+        ]);
+
+        return redirect()->route('meja.index')->with('success', 'Meja berhasil ditambahkan.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(string $id)
     {
         //
-        // $jenisBarang = JenisBarang::find($id);
-        // return response()->json($jenisBarang);
-
-        // Temukan data berdasarkan ID
-        $data = JenisBarang::find($id);
-
-        if ($data) {
-            // Kembalikan data sebagai respons JSON
-            return response()->json([
-                'success' => true,
-                'data' => $data
-            ]);
-        }
-
-        // Jika data tidak ditemukan
-        return response()->json([
-            'success' => false,
-            'message' => 'Data not found.'
-        ], 404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        //
-        $data = JenisBarang::find($id);
-
+        $data = Meja::find($id);
         if ($data) {
             // Kembalikan data sebagai respons JSON
             return response()->json([
@@ -134,6 +101,27 @@ class MasterJenisBarangController extends Controller
             'message' => 'Data not found.'
         ], 404);
         
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+        $data = Meja::find($id);
+        if ($data) {
+            // Kembalikan data sebagai respons JSON
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Data not found.'
+        ], 404);    
     }
 
     /**
@@ -142,28 +130,27 @@ class MasterJenisBarangController extends Controller
     public function update(Request $request)
     {
         //
-        // dd($request);
-
-        $jenisBarang = JenisBarang::find($request->dataid);
-        if ($jenisBarang->name != $request->field12) {
+        $meja = Meja::find($request->dataid);
+        if ($meja->name != $request->field12) {
             $request->validate([
-                'field12' => 'required|unique:jenis_barang,name,'.$request->dataid.'|max:50'
+                'field12' => 'required|unique:meja,name,'.$request->dataid.'|max:10'
             ]);
         }
-        $jenisBarang = JenisBarang::where('id', $request->dataid)
+        $meja = Meja::where('id', $request->dataid)
                         ->update([
-                            'name' => $request->field12
+                            'name' => $request->field12,
+                            'status' => $request->has('status') ? 1 : 0
                         ]);
-        return redirect()->route('jenisBarang.index')->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('meja.index')->with('success', 'Data berhasil disimpan!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id){
+    public function destroy(string $id)
+    {
         //
-        JenisBarang::find($id)->delete();
-        
-        return redirect()->route('jenisBarang.index')->with('success', 'Data berhasil dihapus!');
+        Meja::find($id)->delete();
+        return redirect()->route('meja.index')->with('success', 'Data berhasil dihapus!');
     }
 }

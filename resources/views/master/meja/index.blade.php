@@ -1,6 +1,6 @@
 @extends('be/main')
-@section('title_page','JENIS BARANG')
-@section('title','JENIS BARANG')
+@section('title_page','MEJA')
+@section('title','MEJA')
 @section('content')
 @if ($errors->any())
     <div class="alert alert-danger">
@@ -19,9 +19,9 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title" id="defaultModalLabel">Tambah Jenis Barang</h4>
+                            <h4 class="modal-title" id="defaultModalLabel">Tambah Meja</h4>
                         </div>
-                        <form id="productForm" name="productForm" method="post" action="{{ route('jenisBarang.store') }}">
+                        <form id="productForm" name="productForm" method="post" action="{{ route('meja.store') }}">
                             @csrf
                         <div class="modal-body">
                             <div class="alert alert-danger print-error-msg" style="display:none">
@@ -29,9 +29,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label">Name:</label>
+                        <label for="name" class="col-sm-2 control-label">Nomor Meja:</label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" value="{{ old('name') }}" maxlength="50" >
+                            <input type="number" class="form-control" id="name" name="name" placeholder="No Meja" value="{{ old('name') }}" maxlength="50" >
                         </div>
                         @error('name')
                             <div style="color: red;">
@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label">Name:</label>
+                        <label for="name" class="col-sm-2 control-label">Nomor Meja:</label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="field1" name="field1" readonly >
                         </div>
@@ -83,7 +83,7 @@
                         <div class="modal-header">
                             <h4 class="modal-title" id="dataModalTitle2"></h4>
                         </div>
-                        <form id="productForm" name="productForm" method="post" action="{{ route('jenisBarang.update') }}">
+                        <form id="productForm" name="productForm" method="post" action="{{ route('meja.update') }}">
                             @csrf
                         <div class="modal-body">
                             <div class="alert alert-danger print-error-msg" style="display:none">
@@ -91,9 +91,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label">Name:</label>
+                        <label for="name" class="col-sm-2 control-label">Nomor Meja:</label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control" id="field12" name="field12" required >
+                            <input type="number" class="form-control" id="field12" name="field12" required >
+                        </div>
+                        <div class="switch">
+                            <label>Tidak Aktif<input type="checkbox" id="status" name="status"><span class="lever"></span>Aktif</label>
                         </div>
                         <input type="hidden" id="dataid" name="dataid" value="">
                        @error('field12')
@@ -118,7 +121,7 @@
                     <div class="card">
                         <div class="header">
                             <h2>
-                                Jenis Barang
+                                Meja
                             </h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
@@ -133,11 +136,12 @@
                         </div>
                         <div class="body">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover dataTable js-exportable" id="jenisbarang-table">
+                                <table class="table table-bordered table-striped table-hover dataTable js-exportable" id="meja-table">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Name</th>
+                                            <th>Status</th>
                                             <th width="100px">Action</th>
                                         </tr>
                                     </thead>
@@ -154,10 +158,10 @@
 <script type="text/javascript">
     $(function() {
 
-        var table = $('#jenisbarang-table').DataTable({
+        var table = $('#meja-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('jenisBarang.index') }}",
+            ajax: "{{ route('meja.index') }}",
             columns: [{
                     data: 'id',
                     name: 'id'
@@ -165,6 +169,10 @@
                 {
                     data: 'name',
                     name: 'name'
+                },
+                {
+                    data: 'status',
+                    name: 'status'
                 },
                 {
                     data: 'action', 
@@ -176,11 +184,11 @@
 
         $('.dataTable').on('click', '.show-data', function() {
         var dataId = $(this).data('id'); // Ambil nilai dari atribut data-id
-        var modalTitle = $(this).hasClass('update-data') ? 'Edit Data Jenis Barang' : 'Detail Data Jenis Barang';
+        var modalTitle = $(this).hasClass('update-data') ? 'Edit Data Meja' : 'Detail Data Meja';
 
         // Konfigurasi AJAX show data
         $.ajax({
-            url: '/master/jenis-barang/show/' + dataId, // Ganti dengan URL route Laravel Anda
+            url: '/master/meja/show/' + dataId, // Ganti dengan URL route Laravel Anda
             type: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -206,11 +214,11 @@
 
         $('.dataTable').on('click', '.update-data', function() {
         var dataId = $(this).data('id'); // Ambil nilai dari atribut data-id
-        var modalTitle = $(this).hasClass('update-data') ? 'Edit Data Jenis Barang' : 'Detail Data Jenis Barang';
+        var modalTitle = $(this).hasClass('update-data') ? 'Edit Data Meja' : 'Detail Data Meja';
 
         // Konfigurasi AJAX edit data
         $.ajax({
-            url: '/master/jenis-barang/edit/' + dataId, // Ganti dengan URL route Laravel Anda
+            url: '/master/meja/edit/' + dataId, // Ganti dengan URL route Laravel Anda
             type: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -220,6 +228,8 @@
                     // Isi data ke dalam modal
                     $('#dataModalTitle2').text(modalTitle); // Atur judul modal
                     $('#field12').val(data.name); // Isi nilai ke input/field form
+                    $('#status').prop('checked', data.status == 1);
+                    $('#status').val(data.status);
 
                     // Simpan ID data di form untuk keperluan update
                     $('#dataid').val(data.id); 

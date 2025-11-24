@@ -32,7 +32,7 @@
                             <span>Home</span>
                         </a>
                     </li>
-                    <li class="{{request ()->is('master/jenis-barang') ? 'active' :'' }}">
+                    <li class="{{request ()->is('master/jenis-barang','master/meja') ? 'active' :'' }}">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">trending_down</i>
                             <span>Master</span>
@@ -43,34 +43,10 @@
                                     <span>Jenis Barang</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <span>Menu Item - 2</span>
+                            <li class="{{request ()->is('master/meja') ? 'active' :'' }}">
+                                <a href="{{ url('/master/meja') }}">
+                                    <span>Meja</span>
                                 </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="menu-toggle">
-                                    <span>Level - 2</span>
-                                </a>
-                                <ul class="ml-menu">
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <span>Menu Item</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0);" class="menu-toggle">
-                                            <span>Level - 3</span>
-                                        </a>
-                                        <ul class="ml-menu">
-                                            <li>
-                                                <a href="javascript:void(0);">
-                                                    <span>Level - 4</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
                             </li>
                         </ul>
                     </li>
