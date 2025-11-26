@@ -32,7 +32,7 @@
                             <span>Home</span>
                         </a>
                     </li>
-                    <li class="{{request ()->is('master/jenis-barang','master/meja') ? 'active' :'' }}">
+                    <li class="{{request ()->is('master/jenis-barang','master/meja','master/barang') ? 'active' :'' }}">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">trending_down</i>
                             <span>Master</span>
@@ -46,6 +46,11 @@
                             <li class="{{request ()->is('master/meja') ? 'active' :'' }}">
                                 <a href="{{ url('/master/meja') }}">
                                     <span>Meja</span>
+                                </a>
+                            </li>
+                            <li class="{{request ()->is('master/barang') ? 'active' :'' }}">
+                                <a href="{{ url('/master/barang') }}">
+                                    <span>Barang</span>
                                 </a>
                             </li>
                         </ul>

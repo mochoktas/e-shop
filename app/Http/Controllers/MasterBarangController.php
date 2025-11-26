@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use App\Models\Meja;
+use App\Models\JenisBarang;
+use App\Models\Barang;
 use yajra\Datatables\Datatables;
-use PDF; // Barryvdh\DomPDF\Facade
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Illuminate\Support\Facades\URL;
 
-class MasterMejaController extends Controller
+class MasterBarangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,46 +16,39 @@ class MasterMejaController extends Controller
     public function index(Request $request)
     {
         //
+        $jenis_barang = JenisBarang::all();
         if ($request->ajax()) {
 
-            $data = Meja::query();
+            $data = Barang::query();
 
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
        
-                            $pdfroute = route('meja.generatePDF', $row->id);
                             $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="View" class="me-1 btn btn-info btn-sm show-data"><i class="fa-regular fa-eye"></i> View</a>';
                             $btn = $btn. '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm update-data"><i class="fa-regular fa-pen-to-square"></i> Edit</a>';
-                            $btn = $btn. '<a href="'.$pdfroute.'" data-toggle="tooltip" data-original-title="QR" class=" btn btn-default btn-sm"><i class="fa-regular fa-pen-to-square"></i> Print QR</a>';
       
                             // $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct"><i class="fa-solid fa-trash"></i> Delete</a>';
-                            $deleteRoute = route('meja.delete', $row->id);
+                            $deleteRoute = route('barang.delete', $row->id);
                             $btn = $btn.'<form action="'.$deleteRoute.'" method="POST" style="display:inline;"> 
                                 <input type="hidden" name="_token" value="'.csrf_token().'">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button type="submit" data-toggle="tooltip" data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct" onclick="return confirm(\'Apakah Anda yakin ingin menghapus data ini?\')"><i class="fa-solid fa-trash"></i>Delete</button>
                                 </form>
                             ';
-    
-                            
-    
-                            // $btn .= '<form action="'.$deleteRoute.'" method="POST" style="display:inline;">';
-                            // $btn .= '<input type="hidden" name="_token" value="'.csrf_token().'">'; 
-                            // $btn .= '<input type="hidden" name="_method" value="DELETE">'; 
-                            // $btn .= '<button type="submit" data-toggle="tooltip" data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct" onclick="return confirm(\'Apakah Anda yakin ingin menghapus data ini?\')"><i class="fa-solid fa-trash"></i>Delete</button>';
-                            // $btn .= '</form>';
                             return $btn;
                     })
-                    ->editColumn('status', function ($row) {
-                        return $row->status == 1 ? 'Aktif' : 'Tidak Aktif';
-                    })
-
-
                     ->rawColumns(['action'])
+                    ->addColumn('jb', function ($row) {
+                        return $row->jenis_barang->name;
+                    })
+                    ->addColumn('photo', function($row){
+                        $url = asset('images/'.$row->photo);
+                        return '<img src="'.$url.'" border="0" width="50" class="img-rounded" align="center" />';
+                    })
                     ->make(true);
         }
-        return view('master.meja.index');
+        return view('master.barang.index', compact('jenis_barang'));
     }
 
     /**
@@ -74,15 +65,21 @@ class MasterMejaController extends Controller
     public function store(Request $request)
     {
         //
+        // dd($request->all());
         $request->validate([
-            'name' => 'required|unique:meja|max:10'
+            'name' => ['required', 'unique:barang', 'max:50'],
+            'harga' => ['required', 'numeric'],
+            'jb_id' => ['required', 'exists:jenis_barang,id']
         ]);
-        $meja = Meja::create([
-            'name' => $request->name,
-            'status' => 0,
-        ]);
-
-        return redirect()->route('meja.index')->with('success', 'Meja berhasil ditambahkan.');
+        $barang = Barang::create(
+            [
+                'name' => $request->name,
+                'harga' => $request->harga,
+                'jenis_barang_id' => $request->jb_id
+            ]
+        );
+        return redirect()->route('barang.index')
+            ->with('success', 'Barang created successfully.');
     }
 
     /**
@@ -91,7 +88,8 @@ class MasterMejaController extends Controller
     public function show(string $id)
     {
         //
-        $data = Meja::find($id);
+        $data = Barang::find($id);
+
         if ($data) {
             // Kembalikan data sebagai respons JSON
             return response()->json([
@@ -105,7 +103,6 @@ class MasterMejaController extends Controller
             'success' => false,
             'message' => 'Data not found.'
         ], 404);
-        
     }
 
     /**
@@ -114,7 +111,8 @@ class MasterMejaController extends Controller
     public function edit(string $id)
     {
         //
-        $data = Meja::find($id);
+        $data = Barang::find($id);
+
         if ($data) {
             // Kembalikan data sebagai respons JSON
             return response()->json([
@@ -122,11 +120,12 @@ class MasterMejaController extends Controller
                 'data' => $data
             ]);
         }
-        
+
+        // Jika data tidak ditemukan
         return response()->json([
             'success' => false,
             'message' => 'Data not found.'
-        ], 404);    
+        ], 404);
     }
 
     /**
@@ -135,18 +134,17 @@ class MasterMejaController extends Controller
     public function update(Request $request)
     {
         //
-        $meja = Meja::find($request->dataid);
-        if ($meja->name != $request->field12) {
+        $barang = Barang::find($request->dataid);
+        if ($barang->name != $request->field12) {
             $request->validate([
-                'field12' => 'required|unique:meja,name,'.$request->dataid.'|max:10'
+                'field12' => 'required|unique:barang,name,'.$request->dataid.'|max:50'
             ]);
         }
-        $meja = Meja::where('id', $request->dataid)
+        $barang = Barang::where('id', $request->dataid)
                         ->update([
-                            'name' => $request->field12,
-                            'status' => $request->has('status') ? 1 : 0
+                            'name' => $request->field12
                         ]);
-        return redirect()->route('meja.index')->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('barang.index')->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -155,35 +153,8 @@ class MasterMejaController extends Controller
     public function destroy(string $id)
     {
         //
-        Meja::find($id)->delete();
-        return redirect()->route('meja.index')->with('success', 'Data berhasil dihapus!');
-    }
-
-    public function generatePDF($id)
-    {
-        // dd(URL::to('/'));
-        // 1. Generate the QR Code as an SVG or PNG and encode it for HTML embedding
-        $data_to_encode = URL::to('/');
+        Barang::find($id)->delete();
         
-        // Use SVG format as it works well with DomPDF and is scalable.
-        // Base64 encode the SVG output.
-        $qrcode = base64_encode(
-            QrCode::format('svg') 
-                ->size(200) // Set size
-                ->errorCorrection('H') // Set error correction level (High)
-                ->generate($data_to_encode)
-        );
-
-        // 2. Prepare data for the PDF view
-        $data = [
-            'title' => 'Meja '. $id,
-            'date' => date('m/d/Y'),
-            'qrcode' => $qrcode, // Pass the encoded QR code to the view
-        ];
-
-        // 3. Load the view and download the PDF
-        $pdf = PDF::loadView('master.meja.mypdf', $data); // 'myPDF' is the name of your Blade file
-        
-        return $pdf->download('document-with-qrcode.pdf');
+        return redirect()->route('barang.index')->with('success', 'Data berhasil dihapus!');
     }
 }

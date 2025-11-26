@@ -10,6 +10,12 @@
     <!-- Animation Css -->
     <link href="{{asset('assets_back/plugins/animate-css/animate.css')}}" rel="stylesheet" />
 
+    <!-- Bootstrap Select Css -->
+    <link href="{{asset('assets_back/plugins/bootstrap-select/css/bootstrap-select.css')}}" rel="stylesheet" />
+    
+    <!-- Dropzone Css -->
+    <link href="{{asset('assets_back/plugins/dropzone/dropzone.css')}}" rel="stylesheet">
+
     <!-- Custom Css -->
     <link href="{{asset('assets_back/css/style.css')}}" rel="stylesheet">
 

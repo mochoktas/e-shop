@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->char('name', length: 100);
             $table->bigInteger('harga');
-            $table->binary('photo');
+            $table->string('photo', length: 255)->nullable();
             $table->unsignedBigInteger('jenis_barang_id');
-            $table->foreign('jenis_barang_id')->references('id')->on('jenis_barang');
+            $table->foreign('jenis_barang_id')->references('id')->on('jenis_barang')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

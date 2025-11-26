@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('total_harga');
             $table->timestamps();
             $table->unsignedBigInteger('meja_id');
-            $table->foreign('meja_id')->references('id')->on('meja');
+            $table->foreign('meja_id')->references('id')->on('meja')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

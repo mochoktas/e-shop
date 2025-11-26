@@ -22,4 +22,14 @@ Route::post('/master/meja/store', [MasterMejaController::class, 'store'])->name(
 Route::post('/master/meja/update', [MasterMejaController::class, 'update'])->name('meja.update');
 Route::delete('/master/meja/delete/{id}', [MasterMejaController::class, 'destroy'])->name('meja.delete');
 Route::get('/master/meja/edit/{id}', [MasterMejaController::class, 'edit'])->name('meja.edit');
+Route::get('/master/meja/generate-pdf/{id}', [MasterMejaController::class, 'generatePDF'])->name('meja.generatePDF');
 // Route::get('/get-meja', [MasterMejaController::class, 'getMeja'])->name('get.meja');
+
+use App\Http\Controllers\MasterBarangController;
+Route::get('/master/barang', [MasterBarangController::class, 'index'])->name('barang.index');
+Route::get('/master/barang/show/{id}', [MasterBarangController::class, 'show'])->name('barang.show');
+Route::post('/master/barang/store', [MasterBarangController::class, 'store'])->name('barang.store');  
+Route::post('/master/barang/update', [MasterBarangController::class, 'update'])->name('barang.update');
+Route::delete('/master/barang/delete/{id}', [MasterBarangController::class, 'destroy'])->name('barang.delete');
+Route::get('/master/barang/edit/{id}', [MasterBarangController::class, 'edit'])->name('barang.edit');
+// Route::get('/get-barang', [MasterBarangController::class, 'getBarang'])->name('get.barang');

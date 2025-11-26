@@ -16,6 +16,9 @@
     <!-- Custom Js -->
     <script src="{{asset('assets_back/js/admin.js')}}"></script>
 
+    <!-- Dropzone Plugin Js -->
+    <script src="{{asset('assets_back/plugins/dropzone/dropzone.js')}}"></script>
+
     <!-- Demo Js -->
     <script src="{{asset('assets_back/js/demo.js')}}"></script>
     <!-- Jquery DataTable Plugin Js -->

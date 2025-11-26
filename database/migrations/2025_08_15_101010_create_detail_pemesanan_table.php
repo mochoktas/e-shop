@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('detail_pemesanan', function (Blueprint $table) {
             $table->unsignedBigInteger('pemesanan_id');
-            $table->foreign('pemesanan_id')->references('id')->on('pemesanan');
+            $table->foreign('pemesanan_id')->references('id')->on('pemesanan')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('barang_id');
-            $table->foreign('barang_id')->references('id')->on('barang');
+            $table->foreign('barang_id')->references('id')->on('barang')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('jumlah');
             $table->integer('harga_satuan');
             $table->integer('harga_total');
