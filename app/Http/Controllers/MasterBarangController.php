@@ -157,4 +157,56 @@ class MasterBarangController extends Controller
         
         return redirect()->route('barang.index')->with('success', 'Data berhasil dihapus!');
     }
+
+    public function photoUpload(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'dataid' => 'required|exists:barang,id'
+        ]);
+
+        $imageName = time().'.'.$request->photo->extension();  
+     
+        $request->photo->move(public_path('images'), $imageName);
+
+        // Update the photo field in the database
+        Barang::where('id', $request->dataid)
+                ->update([
+                    'photo' => $imageName
+                ]);
+
+        return redirect()->route('barang.index')
+                        ->with('success','Photo uploaded successfully.');
+    }
+
+    public function editPhoto(string $id)
+    {
+        //
+        $data = Barang::find($id);
+
+        if ($data) {
+            // Kembalikan data sebagai respons JSON
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        }
+
+        // Jika data tidak ditemukan
+        return response()->json([
+            'success' => false,
+            'message' => 'Data not found.'
+        ], 404);
+    }
+
+    public function deletePhoto(string $id): RedirectResponse
+    {
+        //
+        Barang::where('id', $id)
+                ->update([
+                    'photo' => null
+                ]);
+        
+        return redirect()->route('barang.index')->with('success', 'Photo berhasil dihapus!');
+    }
 }

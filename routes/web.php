@@ -32,4 +32,8 @@ Route::post('/master/barang/store', [MasterBarangController::class, 'store'])->n
 Route::post('/master/barang/update', [MasterBarangController::class, 'update'])->name('barang.update');
 Route::delete('/master/barang/delete/{id}', [MasterBarangController::class, 'destroy'])->name('barang.delete');
 Route::get('/master/barang/edit/{id}', [MasterBarangController::class, 'edit'])->name('barang.edit');
+Route::get('/master/barang/edit-photo/{id}', [MasterBarangController::class, 'editPhoto'])->name('barang.editPhoto');
+Route::post('/master/barang/update-photo', [MasterBarangController::class, 'updatePhoto'])->name('barang.updatePhoto');
+Route::post('/master/barang/delete-photo', [MasterBarangController::class, 'deletePhoto'])->name('barang.deletePhoto');
+
 // Route::get('/get-barang', [MasterBarangController::class, 'getBarang'])->name('get.barang');
